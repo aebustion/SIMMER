@@ -22,4 +22,8 @@ These files contain all the precomputed data needed to run any SIMMER queries:
 
  
  ## Input format
+ 
+ 
+ ## Run an example query using command line SIMMER tool
+ 
 
