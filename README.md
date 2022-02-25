@@ -7,9 +7,10 @@ To run SIMMER, the user will need the appropriate conda environment.
 `$ conda env create --file SIMMER.yml`
 
 ## Precomputed Data
-Download: https://www.dropbox.com/s/cqcn0vnnt7ko6ua/SIMMER_files.tar.lz4?dl=0
+Download: https://www.dropbox.com/s/i9dhjnepg0zl555/SIMMER_files.tar.gz?dl=0
 
-`$ wget https://www.dropbox.com/s/cqcn0vnnt7ko6ua/SIMMER_files.tar.lz4?dl=0`
+
+`$ wget https://www.dropbox.com/s/i9dhjnepg0zl555/SIMMER_files.tar.gz?dl=0`
 
 These files contain all the precomputed data needed to run any SIMMER queries: 
 * fingerprints of all MetaCyc reactions, 
