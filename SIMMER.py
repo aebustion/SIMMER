@@ -25,7 +25,6 @@ import argparse
 
 
 def run_rxn(row, df):
-    print("Describing input reactions...")
     sms_l = df.iloc[row,3].split(' // ')
     sms_r = df.iloc[row,4].split(' // ')
     
@@ -48,7 +47,7 @@ def run_rxn(row, df):
 
 
 def do_eigen_decomp(similarities,output_dir,n_factors):
-    print("Starting eigen decomp...")
+    print("\nStarting eigen decomp...")
     D, V = LA.eigh(np.array(similarities))
     for f in n_factors:
         t0 = time.time()
@@ -58,7 +57,7 @@ def do_eigen_decomp(similarities,output_dir,n_factors):
         D_half = np.diag(D_half)
         X_mol = np.dot(V_fin,D_half)
         t1 = time.time()
-        print("Finished eigen decomp for " + str(f) + " factors in " + str(t1-t0) + " seconds")
+        print("\nFinished eigen decomp for " + str(f) + " factors in " + "{:.2f}".format(t1-t0) + " seconds")
         pkl.dump(X_mol, open(str(output_dir) + str(f) + '_factors.p', "wb"))
 
         
@@ -136,13 +135,14 @@ def make_ec_plot(DM):
 
 
 def fp_queries(dms_df, fps):
+    print("\nDescribing input reactions...")
     t0 = time.time()
     for i in range(len(dms_df)):
         rxn = run_rxn(i, dms_df)
         fp = Chem.rdChemReactions.CreateDifferenceFingerprintForReaction(rxn)
         fps.append(fp)
     t1 = time.time()
-    print("Finished creating fingerprints of queries in " + str(t1-t0) + " seconds")
+    print("\nFinished creating fingerprints of queries in " + "{:.2f}".format(t1-t0) + " seconds")
     return fps
 
 
@@ -158,8 +158,8 @@ def add_queries_to_tanimoto(fps, tan_ar):
     tot_array = np.append(np.array(tan_ar),np.array(tan_ar_dm)[:,:8914], axis=0)
     X_mol = np.append(tot_array, np.array(tan_ar_dm).T, axis=1)  
     t1 = time.time()
-    print("Finished computing and adding queries to tanimoto similarity matrix in " 
-          + str(t1-t0) + " seconds")
+    print("\nFinished computing and adding queries to tanimoto similarity matrix in " 
+          + "{:.2f}".format(t1-t0) + " seconds")
     return X_mol
 
 
@@ -183,11 +183,11 @@ def return_query_results(DM, X_mol, id_to_index, rxn_to_ec, final, output_dir):
          names=['Series name'])
     
     t1=time.time()
-    print("Finished predicting EC codes in " + str(t1-t0) + ' seconds')
-    print("The closest MetaCyc reaction is " 
-          + closest_rxn 
-          + "_" 
-          + closest_ec)
+    print("\nFinished predicting EC codes in " + "{:.2f}".format(t1-t0) + ' seconds')
+    print("\nAll output files now in: " + output_dir + "\nand the closest MetaCyc reaction is " 
+          + closest_rxn.split('_')[0] 
+          + "_EC" 
+          + closest_ec + '\n')
     result_df.to_csv(output_dir + '/' + DM + '_EC_predictions.tsv', sep='\t')
 
     
@@ -220,21 +220,22 @@ def main():
     #load MetaCyc data
     #load data
     fps = pkl.load(open(input_dir + "/MC_rxn_fps.p", 'rb'))
-    print('fps loaded')
     tan_ar = pkl.load(open(input_dir + "/MC_rxn_tanimoto_matrix.p", 'rb'))
     id_to_index = pkl.load(open(input_dir + "/MC_rxn_to_matrix_index_dict.p", 'rb'))
     rxn_to_ec = pkl.load(open(input_dir + "/MC_rxn_ec_dict.p", 'rb'))
     final = pd.read_pickle(input_dir + "/MetaCyc_reactions_tsv.p")
     
+    print('\nPrecomputed data loaded')
+    
     #load and run query
     if query != None:
         dms_df = pd.read_csv(query, sep='\t')
     else:
-        reaction = input("Enter a reaction identifier (e.g. DM1): ")
-        left_comp = input("Enter substrate name (e.g. 4-asa): ")
-        right_comp = input("Enter product name (e.g. n-acetyl-4-asa): ")
-        left_smiles = input("Enter the SMILES of substrate(s) and known cofactors separated by // # e.g. C1=CC(=C(C=C1N)O)C(=O)O // CC(=O)SCCNC(=O)CCNC(=O)[C@@H](C(C)(C)COP(=O)(O)OP(=O)(O)OC[C@@H]1[C@H]([C@H]([C@@H](O1)N2C=NC3=C(N=CN=C32)N)O)OP(=O)(O)O)O     :") 
-        right_smiles = input("Enter the SMILES of product(s) separated by // # e.g. CC(=O)NC1=CC(=C(C=C1)C(=O)O)O // CC(C)(COP(=O)(O)OP(=O)(O)OC[C@@H]1[C@H]([C@H]([C@@H](O1)N2C=NC3=C(N=CN=C32)N)O)OP(=O)(O)O)[C@H](C(=O)NCCC(=O)NCCS)O     :") 
+        reaction = input("\nEnter a reaction identifier (e.g. DM1): ")
+        left_comp = input("\nEnter substrate name (e.g. 4-asa): ")
+        right_comp = input("\nEnter product name (e.g. n-acetyl-4-asa): ")
+        left_smiles = input("\nEnter the SMILES of substrate(s) and known cofactors separated by '//' \ne.g. C1=CC(=C(C=C1N)O)C(=O)O // CC(=O)SCCNC(=O)CCNC(=O)[C@@H](C(C)(C)COP(=O)(O)OP(=O)(O)OC[C@@H]1[C@H]([C@H]([C@@H](O1)N2C=NC3=C(N=CN=C32)N)O)OP(=O)(O)O)O : ") 
+        right_smiles = input("\nEnter the SMILES of product(s) separated by '//' \ne.g. CC(=O)NC1=CC(=C(C=C1)C(=O)O)O // CC(C)(COP(=O)(O)OP(=O)(O)OC[C@@H]1[C@H]([C@H]([C@@H](O1)N2C=NC3=C(N=CN=C32)N)O)OP(=O)(O)O)[C@H](C(=O)NCCC(=O)NCCS)O : ") 
         
         dms_df = pd.DataFrame([[reaction, 
                                 left_comp, 
