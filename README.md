@@ -30,10 +30,11 @@ These files contain all the precomputed data needed to run any SIMMER queries:
 | -------- | --------- | ---------- | ----------- | ------------ |
 | DM1 | brivudine | bromovinyluracil | OC[C@H]1O[C@H](C[C@@H]1O)N1C=C(\C=C\Br)C(=O)NC1=O | Br\C=C\C1=CNC(=O)NC1=O |
 | DM2 | gemcitabine | 2′, 2′-difluorodeoxyuridine | NC1=NC(=O)N(C=C1)[C@@H]1O[C@H](CO)[C@@H](O)C1(F)F // O // [H+]  | OC[C@H]1O[C@@H](N2C=CC(=O)NC2=O)C(F)(F)[C@@H]1O // [NH4+] |
+| DM3 | foo | bar | C1=CC=C2C(=C1)C(=NO2)CS(=O)(=O)N  | O=C(CS(=O)(N)=O)C1=CC=CC=C1O |
  
  Notes:
- * The user can enter any text into the left_comp and right_comp columns, but in the reaction column must identify a query using 'DM' followed by any alphanumeric character (SIMMER distinguishes queries from its database of MetaCyc reactions by 'seeing' the DM label).
- * If the query includes multiple substrates and/or products, their respective SMILES must be separated by a ' // '
+ * The user can enter any text into the left_comp and right_comp columns (as seen in the DM3 example), but for the reaction column **must identify a query using 'DM' followed by any alphanumeric character** (SIMMER distinguishes queries from its database of MetaCyc reactions by 'seeing' the DM label).
+ * If the query includes multiple substrates and/or products (as seen in the DM2 example), their respective SMILES **must be separated by a ' // '**
  * SIMMER can process either canonical or isomeric SMILES; the MetaCyc database uses isomeric SMILES where available.
  
  
