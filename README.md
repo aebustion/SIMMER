@@ -32,9 +32,10 @@ These files contain all the precomputed data needed to run any SIMMER queries:
 | DM2 | gemcitabine | 2′, 2′-difluorodeoxyuridine | NC1=NC(=O)N(C=C1)[C@@H]1O[C@H](CO)[C@@H](O)C1(F)F // O // [H+]  | OC[C@H]1O[C@@H](N2C=CC(=O)NC2=O)C(F)(F)[C@@H]1O // [NH4+] |
  
  Notes:
- * SIMMER distinguishes queries from its database of MetaCyc reactions by 'seeing' a reaction labeled as DMX (where X can be any alphanumeric identifier) 
- * SIMMER can process either canonical or isomeric SMILES, and the MetaCyc database uses isomeric SMILES where possible.
- * If the query includes multiple substrates and/or products, these smiles must be separated by a ' // ' 
+ * The user can enter any text into the left_comp and right_comp columns, but in the reaction column must identify a query using 'DM' followed by any alphanumeric character (SIMMER distinguishes queries from its database of MetaCyc reactions by 'seeing' the DM label).
+ * If the query includes multiple substrates and/or products, their respective SMILES must be separated by a ' // '
+ * SIMMER can process either canonical or isomeric SMILES; the MetaCyc database uses isomeric SMILES where available.
+ 
  
  ## Run an example query using command line SIMMER tool
  
