@@ -165,7 +165,7 @@ def add_queries_to_tanimoto(fps, tan_ar):
 
 def return_query_results(DM, X_mol, id_to_index, rxn_to_ec, final, output_dir):
     t0=time.time()
-    closest_rxn = find_closest_rxns(DM, X_mol, id_to_index)[0][0]
+    closest_rxn, euc_dist = find_closest_rxns(DM, X_mol, id_to_index)[0]
     closest_ec = rxn_to_ec[closest_rxn]
 
     ec1df = calc_odds_ratio(DM, X_mol, 1, id_to_index, rxn_to_ec)
@@ -175,7 +175,7 @@ def return_query_results(DM, X_mol, id_to_index, rxn_to_ec, final, output_dir):
     ec3df = calc_odds_ratio(DM, X_mol, 3, id_to_index, rxn_to_ec)
     ec3df = ec3df.loc[ec3df['predicted_EC'].str.startswith(ec1)]
     
-    img = run_rxn(final.loc[final['reaction']==closest_rxn].index[0],final)
+    #img = run_rxn(final.loc[final['reaction']==closest_rxn].index[0],final)
     #img.save(output_dir + '/' + DM + '_top_hit_' + closest_rxn + closest_ec +'.png')
 
     result_df = pd.concat([ec1df,ec2df, ec3df], 
@@ -183,12 +183,15 @@ def return_query_results(DM, X_mol, id_to_index, rxn_to_ec, final, output_dir):
          names=['Series name'])
     
     t1=time.time()
-    print("\nFinished predicting EC codes in " + "{:.2f}".format(t1-t0) + ' seconds')
-    print("\nAll output files now in: " + output_dir + "\nand the closest MetaCyc reaction is " 
+    print("\nFor " + DM + ":\nFinished predicting EC codes in " + "{:.2f}".format(t1-t0) + ' seconds')
+    print("All output files now in: " + output_dir + "\nand the closest MetaCyc reaction is " 
           + closest_rxn.split('_')[0] 
           + "_EC" 
           + closest_ec + '\n')
+    
     result_df.to_csv(output_dir + '/' + DM + '_EC_predictions.tsv', sep='\t')
+    with open(output_dir + '/' + DM + "_closest_rxn.txt", "w") as file:
+        file.write(str([DM, closest_rxn.split('_')[0], euc_dist]))
 
     
 def get_arguments():
