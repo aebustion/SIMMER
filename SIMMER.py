@@ -79,8 +79,9 @@ def find_closest_rxns(query_id, X_mol, id_to_index):
     results = []
     for ind, dist in s_dists:
         results.append([list(id_to_index.keys())[list(id_to_index.values()).index(ind)], str(dist)]) 
-    [results.remove(result) for result in results if query_id in result] 
-    return results   
+    [results.remove(result) for result in results if query_id in result]
+    
+    return [x for x in results if not x[0].startswith('DM')]
         
 
 def calc_odds_ratio(query, X_mol, ec_level, id_to_index, rxn_to_ec):
@@ -104,7 +105,11 @@ def calc_odds_ratio(query, X_mol, ec_level, id_to_index, rxn_to_ec):
         table = np.array([[(x1+1), (x2+1)],[(x3+1), (x4+1)]])
         #this pvalue is the same as doing a survival function (1-cdf of hypergeometric)
         oddsratio, pvalue = stats.fisher_exact(table)
-        best_result.append([query, ec, df_result.loc[df_result[2]==ec][1].min(), oddsratio, pvalue])
+        best_result.append([query, 
+                            ec, 
+                            "{:.2f}".format(float(df_result.loc[df_result[2]==ec][1].min())), 
+                            "{:.2f}".format(oddsratio), 
+                            float("{:.2E}".format(pvalue))])
     
     best_result_df = pd.DataFrame(best_result)
     best_result_df.columns = ['query', 'predicted_EC', 'min_euc', 'OR', 'p_value']
@@ -178,7 +183,7 @@ def return_query_results(DM, X_mol, id_to_index, rxn_to_ec, final, output_dir):
     #img = run_rxn(final.loc[final['reaction']==closest_rxn].index[0],final)
     #img.save(output_dir + '/' + DM + '_top_hit_' + closest_rxn + closest_ec +'.png')
 
-    result_df = pd.concat([ec1df,ec2df, ec3df], 
+    result_df = pd.concat([ec1df,ec2df,ec3df], 
           keys=['EC_1places','EC_2places', 'EC_3places'],
          names=['Series name'])
     
