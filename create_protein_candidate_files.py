@@ -63,7 +63,9 @@ def pull_hms_results(input_dir, output_dir, dm, tax_df):
     genome = ['_'.join(i.split('_')[0:2]) for i in df['hit_id']]
     df['Genome']=genome
     df = pd.merge(df, tax_df, on='Genome')
-    df = df[['hit_id', 'hit_descript', 'Lineage','full_seq_evalue','full_seq_bitscore', 'aln_span', 'Genome', 'Genome_type', 'Original_name', 'GC_content']]
+    df = df[['hit_id', 'hit_descript', 'Lineage', 'Phylum',
+             'full_seq_evalue','full_seq_bitscore', 'aln_span', 
+             'Genome', 'Genome_type', 'Original_name', 'GC_content']]
     
     df = df.loc[df['aln_span']>=query_len*.5]
     df_new = df_existing.append(df).drop_duplicates()
@@ -99,6 +101,7 @@ def main():
 
     #load data
     tax_df = pd.read_csv("/pollard/data/wynton/consortia/UHGG_v1/genomes-all_metadata.tsv", sep='\t')
+    tax_df['Phylum'] = [group.split(';')[1] for group in tax_df['Lineage']]
     
     #load and run query
     pull_hms_results(input_dir, output_dir, query, tax_df=tax_df)

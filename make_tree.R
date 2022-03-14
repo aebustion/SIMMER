@@ -6,6 +6,7 @@ library(treeio)
 library(tidytree) 
 library(dplyr) 
 library(RColorBrewer) 
+library(ape)
 
 # command line args
 args <- commandArgs(trailingOnly = TRUE)
@@ -16,15 +17,20 @@ rxn_name <- args[4]
 
 # data
 tree <- read.tree(tree_file)
+labs <- c(tree$tip.label)
 info <- read.csv(tsv_file)
+new <- info[info$hit_id %in% labs,]
 
-info <- info %>%
+new <- new %>%
   select(hit_id, everything())
-result <- info
-row.names(result) <- info$hit_id
+result <- new
+row.names(result) <- new$hit_id
+
+keeptips <- tree$tip.label[tree$tip.label %in% new$hit_id]
+p0 <- keep.tip(tree, keeptips)
 
 #trees
-p <- ggtree(tree, layout='fan') %<+% result
+p <- ggtree(p0, layout='fan') %<+% result
 
 p1 <- p +
   geom_tippoint(aes(color = Phylum)) +
@@ -60,4 +66,4 @@ p3 <-p2 + new_scale_fill() +
                                        keyheight = 0.3, order=4))
 
 
-ggsave(paste(output_dir,rxn_name, '.png'), p3, width = 12, height = 8)
+ggsave(paste(output_dir,rxn_name,'.png', sep = ""), p3, width = 12, height = 8)
