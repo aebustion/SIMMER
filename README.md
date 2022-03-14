@@ -9,7 +9,7 @@ To run command-line SIMMER, the user will need the appropriate conda environment
 `$ source activate SIMMER`
 
 ## Precomputed Data
-Download: https://www.dropbox.com/s/i9dhjnepg0zl555/SIMMER_files.tar.gz?dl=0
+Download: https://www.dropbox.com/s/1u21oha2y0cxv2q/SIMMER_files.tar.gz?dl=0
 
 
 `$ wget https://www.dropbox.com/s/i9dhjnepg0zl555/SIMMER_files.tar.gz?dl=0`
