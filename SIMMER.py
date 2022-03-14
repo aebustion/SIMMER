@@ -21,6 +21,8 @@ from rdkit import DataStructs
 import sys
 import time
 import argparse
+import os
+import shutil
 #import seaborn as sns
 
 
@@ -117,28 +119,6 @@ def calc_odds_ratio(query, X_mol, ec_level, id_to_index, rxn_to_ec):
     return best_result_df.loc[best_result_df['p_value']<0.05].sort_values(by='min_euc')
 
 
-def make_ec_plot(DM):
-    sns.set_style("white")
-    df1 = pd.DataFrame(find_closest_rxns(DM, X_mol))
-    df1['ec'] = [rxn_to_ec[rxn].split('.')[0] for rxn in df1[0]]
-    df1.columns = ['rxn', 'distance', 'ec']
-    skip = ['DM', 'NIL', 'missing']
-    plot_df = df1[~df1['ec'].isin(skip)]
-    plot_df['distance'] = plot_df['distance'].astype('float')
-    g = sns.FacetGrid(plot_df, 
-                      hue="ec", 
-                      height=8.27, 
-                      aspect=11.7/8.27, 
-                      palette='Set2')
-    g = g.map(sns.distplot, "distance",  hist=True, rug=True, kde=False)
-    plt.legend()
-    plt.title((DM), fontsize=20)
-    plt.tick_params(labelsize=12)
-    plt.xlabel('Euclidean distance', fontsize=20)
-    plt.ylabel('Count', fontsize=20)
-    plt.savefig(output_dir + "/" + DM + "_ec_histogram.png")
-
-
 def fp_queries(dms_df, fps):
     print("\nDescribing input reactions...")
     t0 = time.time()
@@ -168,7 +148,7 @@ def add_queries_to_tanimoto(fps, tan_ar):
     return X_mol
 
 
-def return_query_results(DM, X_mol, id_to_index, rxn_to_ec, final, output_dir):
+def return_query_results(DM, X_mol, id_to_index, rxn_to_ec, final, input_dir, output_dir):
     t0=time.time()
     closest_rxn, euc_dist = find_closest_rxns(DM, X_mol, id_to_index)[0]
     closest_ec = rxn_to_ec[closest_rxn]
@@ -179,9 +159,6 @@ def return_query_results(DM, X_mol, id_to_index, rxn_to_ec, final, output_dir):
     ec2df = ec2df.loc[ec2df['predicted_EC'].str.startswith(ec1)]
     ec3df = calc_odds_ratio(DM, X_mol, 3, id_to_index, rxn_to_ec)
     ec3df = ec3df.loc[ec3df['predicted_EC'].str.startswith(ec1)]
-    
-    #img = run_rxn(final.loc[final['reaction']==closest_rxn].index[0],final)
-    #img.save(output_dir + '/' + DM + '_top_hit_' + closest_rxn + closest_ec +'.png')
 
     result_df = pd.concat([ec1df,ec2df,ec3df], 
           keys=['EC_1places','EC_2places', 'EC_3places'],
@@ -194,6 +171,15 @@ def return_query_results(DM, X_mol, id_to_index, rxn_to_ec, final, output_dir):
           + "_EC" 
           + closest_ec + '\n')
     
+    # save files
+    shutil.copy(input_dir + 
+                "/UHGG_data/" + 
+                closest_rxn.split('_')[0] +
+                "_UHGG_hms_tsv.pkl", output_dir)
+    shutil.copy(input_dir + 
+                "/UHGG_data/" + 
+                closest_rxn.split('_')[0] +
+                ".png", output_dir)
     result_df.to_csv(output_dir + '/' + DM + '_EC_predictions.tsv', sep='\t')
     with open(output_dir + '/' + DM + "_closest_rxn.txt", "w") as file:
         file.write(str([DM, closest_rxn.split('_')[0], euc_dist]))
@@ -227,11 +213,11 @@ def main():
 
     #load MetaCyc data
     #load data
-    fps = pkl.load(open(input_dir + "/MC_rxn_fps.p", 'rb'))
-    tan_ar = pkl.load(open(input_dir + "/MC_rxn_tanimoto_matrix.p", 'rb'))
-    id_to_index = pkl.load(open(input_dir + "/MC_rxn_to_matrix_index_dict.p", 'rb'))
-    rxn_to_ec = pkl.load(open(input_dir + "/MC_rxn_ec_dict.p", 'rb'))
-    final = pd.read_pickle(input_dir + "/MetaCyc_reactions_tsv.p")
+    fps = pkl.load(open(input_dir + "/chem_data/MC_rxn_fps.p", 'rb'))
+    tan_ar = pkl.load(open(input_dir + "/chem_data/MC_rxn_tanimoto_matrix.p", 'rb'))
+    id_to_index = pkl.load(open(input_dir + "/chem_data/MC_rxn_to_matrix_index_dict.p", 'rb'))
+    rxn_to_ec = pkl.load(open(input_dir + "/chem_data/MC_rxn_ec_dict.p", 'rb'))
+    final = pd.read_pickle(input_dir + "/chem_data/MetaCyc_reactions_tsv.p")
     
     print('\nPrecomputed data loaded')
     
@@ -265,7 +251,7 @@ def main():
         rxn_to_ec[dms_df.iloc[i,0]] = 'DM'
     
     for DM in dms_df['reaction'].values:
-        return_query_results(DM, X_mol, id_to_index, rxn_to_ec, final, output_dir)
+        return_query_results(DM, X_mol, id_to_index, rxn_to_ec, final, input_dir, output_dir)
 
 
 if __name__ == '__main__':
