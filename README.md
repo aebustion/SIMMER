@@ -45,4 +45,4 @@ to run with multiple queries in tsv format:
 `$ python3 SIMMER.py -i /pollard/data/projects/drug_metabolism/SIMMER_files -o ./ -q ./dms_example.tsv 
 
 or to run with single command line entry:
-`python3 SIMMER.py -i /pollard/data/projects/drug_metabolism/SIMMER_files -o ./
+`$ python3 SIMMER.py -i /pollard/data/projects/drug_metabolism/SIMMER_files -o ./
