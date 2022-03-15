@@ -39,6 +39,13 @@ These files contain all the precomputed data needed to run any SIMMER queries:
  * SIMMER can process either canonical or isomeric SMILES; the MetaCyc database uses isomeric SMILES where available.
  
  
+ ## Output
+ After running a SIMMER query, the user will obtain four files:
+ * DM_distance_ranked_rxns.txt (a file containing all MetaCyc reactions' euclidean distances to the input query, sorted from closest to farthest)
+ * DM_EC_predictions.tsv (a tsv file containing SIMMER's predicted EC numbers for the query reaction)
+ * DM_enzyme_predictions.tsv.pkl (a pickled tsv file summarizing all predicted bacterial enzymes in the human gut capable of the query reaction)
+ * DM_enzyme_predictions.png (a tree representation of the above predicted bacterial enzymes in the human gut)
+ 
  ## Run an example query using command line SIMMER tool
 
 to run with multiple queries in tsv format:
