@@ -2,7 +2,6 @@
 # Annamarie Bustion
 # 2022_02
 # 
-# Parameters:
 #    example query
 #$ python3 SIMMER.py -i /pollard/data/projects/drug_metabolism/SIMMER_files -o ./ 
 ######################################
@@ -23,7 +22,6 @@ import time
 import argparse
 import os
 import shutil
-#import seaborn as sns
 
 
 def run_rxn(row, df):
@@ -47,7 +45,7 @@ def run_rxn(row, df):
     rxn = rdChemReactions.ReactionFromSmarts(left + '>>' + right)
     return rxn
 
-
+'''
 def do_eigen_decomp(similarities,output_dir,n_factors):
     print("\nStarting eigen decomp...")
     D, V = LA.eigh(np.array(similarities))
@@ -61,6 +59,7 @@ def do_eigen_decomp(similarities,output_dir,n_factors):
         t1 = time.time()
         print("\nFinished eigen decomp for " + str(f) + " factors in " + "{:.2f}".format(t1-t0) + " seconds")
         pkl.dump(X_mol, open(str(output_dir) + str(f) + '_factors.p', "wb"))
+        '''
 
         
 #necessary for handling the NILS in ec_dict while building list comprehension
@@ -150,7 +149,8 @@ def add_queries_to_tanimoto(fps, tan_ar):
 
 def return_query_results(DM, X_mol, id_to_index, rxn_to_ec, final, input_dir, output_dir):
     t0=time.time()
-    closest_rxn, euc_dist = find_closest_rxns(DM, X_mol, id_to_index)[0]
+    ranked_list = find_closest_rxns(DM, X_mol, id_to_index)
+    closest_rxn, euc_dist = ranked_list[0]
     closest_ec = rxn_to_ec[closest_rxn]
 
     ec1df = calc_odds_ratio(DM, X_mol, 1, id_to_index, rxn_to_ec)
@@ -172,17 +172,13 @@ def return_query_results(DM, X_mol, id_to_index, rxn_to_ec, final, input_dir, ou
           + closest_ec + '\n')
     
     # save files
-    shutil.copy(input_dir + 
-                "/UHGG_data/" + 
-                closest_rxn.split('_')[0] +
-                "_UHGG_hms_tsv.pkl", output_dir)
-    shutil.copy(input_dir + 
-                "/UHGG_data/" + 
-                closest_rxn.split('_')[0] +
-                ".png", output_dir)
+    shutil.copy(input_dir + "/UHGG_data/" + closest_rxn.split('_')[0] + "_UHGG_hms_tsv.pkl", 
+                output_dir + '/' + DM + '_enzyme_predictions.tsv.pkl')
+    shutil.copy(input_dir + "/UHGG_data/" + closest_rxn.split('_')[0] +".png", 
+                output_dir + '/' + DM + '_enzyme_predictions.png')
     result_df.to_csv(output_dir + '/' + DM + '_EC_predictions.tsv', sep='\t')
-    with open(output_dir + '/' + DM + "_closest_rxn.txt", "w") as file:
-        file.write(str([DM, closest_rxn.split('_')[0], euc_dist]))
+    with open(output_dir + '/' + DM + "_distance_ranked_reactions.txt", "w") as file:
+        file.write("\n".join(str(item) for item in ranked_list))
 
     
 def get_arguments():
@@ -193,12 +189,12 @@ def get_arguments():
                     help='output directory')
     parser.add_argument('-q', action='store', dest='query',
                     help='query tsv file location. leave empty to input directly')
-    parser.add_argument('-t', action='store', dest='num_threads',
-                    help='number of threads to use')
-    parser.add_argument('-f', action='store', dest='fp_type',
-                    help='store type of fingerprint: type options here')
-    parser.add_argument('-p', action='store', dest='pca',
-                    help='whether or not to use dimension reduction, yes/no')
+    #parser.add_argument('-t', action='store', dest='num_threads',
+    #                help='number of threads to use')
+    #parser.add_argument('-f', action='store', dest='fp_type',
+    #                help='store type of fingerprint: type options here')
+    #parser.add_argument('-p', action='store', dest='pca',
+    #                help='whether or not to use dimension reduction, yes/no')
     return parser.parse_args()
 
 
@@ -208,8 +204,8 @@ def main():
     input_dir = arguments.input_dir
     output_dir = arguments.output_dir
     query = arguments.query
-    fp_type = arguments.fp_type
-    pca = arguments.pca
+    #fp_type = arguments.fp_type
+    #pca = arguments.pca
 
     #load MetaCyc data
     #load data
@@ -239,11 +235,10 @@ def main():
                               columns = ['reaction',
                                          'left_comp', 'right_comp', 
                                          'left_smiles','right_smiles'])
-        
-    #fps = fp_queries(dms_df)
+ 
     X_mol = add_queries_to_tanimoto(fp_queries(dms_df, fps), tan_ar)
     
-    #add in eigendecomposition stuff later ####
+    ### add in eigendecomposition stuff later (will require the eigen fx, num pcs, and num_threads ###
     
     for i in range(len(dms_df)):
         id_to_index[dms_df.iloc[i,0]] = i+8914
