@@ -15,6 +15,7 @@ Download: https://www.dropbox.com/s/1u21oha2y0cxv2q/SIMMER_files.tar.gz?dl=0
 `$ wget https://www.dropbox.com/s/1u21oha2y0cxv2q/SIMMER_files.tar.gz?dl=0`
 
 These files contain all the precomputed data needed to run any SIMMER queries: 
+* precomputed hmmsearch results (tsvs and pngs of phylogenies) of the UHGG database
 * fingerprints of all MetaCyc reactions, 
 * a pairwise tanimoto similarity matrix for all MetaCyc fingerprints, and
 * three dictionaries
