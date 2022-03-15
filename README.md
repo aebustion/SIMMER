@@ -9,10 +9,7 @@ To run command-line SIMMER, the user will need the appropriate conda environment
 `$ source activate SIMMER`
 
 ## Precomputed Data
-Download: https://www.dropbox.com/s/1u21oha2y0cxv2q/SIMMER_files.tar.gz?dl=0
-
-
-`$ wget https://www.dropbox.com/s/1u21oha2y0cxv2q/SIMMER_files.tar.gz?dl=0`
+This can be found at /pollard/data/projects/drug_metabolism/SIMMER_files or can be downloaded at https://www.dropbox.com/s/1u21oha2y0cxv2q/SIMMER_files.tar.gz?dl=0
 
 These files contain all the precomputed data needed to run any SIMMER queries: 
 * precomputed hmmsearch results (tsvs and pngs of phylogenies) of the UHGG database
