@@ -12,7 +12,7 @@ To run command-line SIMMER, the user will need the appropriate conda environment
 Download: https://www.dropbox.com/s/1u21oha2y0cxv2q/SIMMER_files.tar.gz?dl=0
 
 
-`$ wget https://www.dropbox.com/s/i9dhjnepg0zl555/SIMMER_files.tar.gz?dl=0`
+`$ wget https://www.dropbox.com/s/1u21oha2y0cxv2q/SIMMER_files.tar.gz?dl=0`
 
 These files contain all the precomputed data needed to run any SIMMER queries: 
 * fingerprints of all MetaCyc reactions, 
@@ -41,8 +41,8 @@ These files contain all the precomputed data needed to run any SIMMER queries:
  ## Run an example query using command line SIMMER tool
 
 to run with multiple queries in tsv format:
-`$ python3 SIMMER.py -i <path_to_precomputed_data -o <path_to_output_director> -q <path_to_query_df>`
-`$ python3 SIMMER.py -i /pollard/data/projects/drug_metabolism/SIMMER_files -o ./ -q ./dms_example.tsv` 
+`$ python3 SIMMER.py -i <path_to_precomputed_data -o <path_to_output_director> -q <path_to_query_df>`\n
+`$ python3 SIMMER.py -i /pollard/data/projects/drug_metabolism/SIMMER_files -o ./ -q ./dms_example.tsv`\n
 
-or to run with single command line entry:
+or to run with single command line entry (follow command line prompts for formatting directions):
 `$ python3 SIMMER.py -i /pollard/data/projects/drug_metabolism/SIMMER_files -o ./`
