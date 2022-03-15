@@ -49,7 +49,7 @@ to run with multiple queries in tsv format:
 
 `$ python3 SIMMER.py -i <path_to_precomputed_data> -o <path_to_output_director> -q <path_to_query_df>`
 
-`$ python3 SIMMER.py -i /pollard/data/projects/drug_metabolism/SIMMER_files -o ./ -q ./dms_example.tsv`
+`$ python3 SIMMER.py -i /pollard/data/projects/drug_metabolism/SIMMER_files -o ./ -q ./queries_example.tsv`
 
 or to run with single command line entry (follow command line prompts to input the query):
 
