@@ -62,14 +62,13 @@ def do_eigen_decomp(similarities,output_dir,n_factors):
         '''
 
         
-'''
 #necessary for handling the NILS in ec_dict while building list comprehension
 def catch(f):
     try:
         return f
     except IndexError:
         return 'NIL'
-'''
+
     
 def find_closest_rxns(query_id, X_mol, id_to_index):
     dists = {}
@@ -85,6 +84,39 @@ def find_closest_rxns(query_id, X_mol, id_to_index):
     
     return [x for x in results if not x[0].startswith('DM')]
         
+
+def calc_odds_ratio(query, X_mol, ec_level, id_to_index, rxn_to_ec):
+    df_result = pd.DataFrame([catch([rxn[0],
+                                     rxn[1], 
+                                     '.'.join(rxn_to_ec[rxn[0]].split('.')[:ec_level])]) for rxn in find_closest_rxns(query,X_mol, id_to_index)])
+    
+    #df_result = df_result[~df_result[0].str.startswith('DM')]
+    df_result = df_result.loc[df_result[0]!=query]
+    df_result = df_result.loc[df_result[2]!='DM']
+    df_result = df_result.iloc[:25,:]
+    df_result = df_result.loc[df_result[2]!='NIL']
+    
+    best_result = []
+    for ec in df_result[2].unique():
+        x1 = df_result.iloc[:25,:].groupby(2).count().iloc[df_result.iloc[:25,:].groupby(2).count().index.get_loc(ec)][0]
+        x2 = 25-x1
+        tot_ec_rxns = df_result.groupby(2).count().iloc[df_result.groupby(2).count().index.get_loc(ec)][0]
+        x3 = tot_ec_rxns - x1
+        x4 = len(X_mol)-tot_ec_rxns-x2
+        table = np.array([[(x1+1), (x2+1)],[(x3+1), (x4+1)]])
+        #this pvalue is the same as doing a survival function (1-cdf of hypergeometric)
+        oddsratio, pvalue = stats.fisher_exact(table)
+        best_result.append([query, 
+                            ec, 
+                            "{:.2f}".format(float(df_result.loc[df_result[2]==ec][1].min())), 
+                            "{:.2f}".format(oddsratio), 
+                            float("{:.2E}".format(pvalue))])
+    
+    best_result_df = pd.DataFrame(best_result)
+    best_result_df.columns = ['query', 'predicted_EC', 'min_euc', 'OR', 'p_value']
+    
+    return best_result_df.loc[best_result_df['p_value']<0.05].sort_values(by='min_euc')
+
 
 def fp_queries(dms_df, fps):
     print("\nDescribing input reactions...")
@@ -115,111 +147,36 @@ def add_queries_to_tanimoto(fps, tan_ar):
     return X_mol
 
 
-def take_ES_walk(ec_cat, ec_df, level):
-    running_tally = []
-    i = 0
-    for ec in ec_df[level]:
-        if ec==ec_cat:
-            i = i+1
-            running_tally.append(i)
-        elif ec =='NIL':
-            i = i+0
-            running_tally.append(i)
-        elif ec == 'DM':
-            i = i+0
-            running_tally.append(i)
-        else:
-            i = i-1
-            running_tally.append(i)
-    return running_tally
-
-
-def find_EC_pval(ec_cats, ec_df, level, perm):
-    sig_es_score_results=[]
-    for ec_cat in ec_cats:
-        if ec_cat=='NIL':
-            continue
-        elif ec_cat=='DM':
-            continue
-        else: 
-            es_tally = take_ES_walk(ec_cat, ec_df, level)
-            es_score = max(es_tally)
-            where = es_tally.index(es_score)
-            es_score_norm = es_score/(ec_df[level].value_counts()[ec_cat])
-            perm.append(es_score_norm)
-            perm.sort(reverse=True)
-            p_val = (perm.index(es_score_norm)+1)/len(perm)
-            perm.remove(es_score_norm)
-            if p_val<0.05:
-                if es_score_norm>0:
-                    sig_es_score_results.append([ec_cat, es_score_norm, p_val, where])
-                
-    return pd.DataFrame(sig_es_score_results, columns=['EC', 'enrich_score', 'p_val', 'where'])
-
-
-def predict_all_ECs(ranked_list, id_to_index, perm_df, rxn_to_ec):
-    ec_array = []
-    for result in ranked_list:
-        ec_array.append([rxn_to_ec[(result[0])], result[1]])
-    ec_df = pd.DataFrame(ec_array)
-    ec_df.columns = ['EC4', 'euc']
-    for ec in range(1,4):
-        ec_df['EC' + str(ec)]=['.'.join(e.split('.')[0:ec]) for e in ec_df['EC4']]
-    ec_df = ec_df[['euc', 'EC1', 'EC2', 'EC3', 'EC4']]
-    
-    # first level
-    sig_results1 = find_EC_pval(ec_df['EC1'].unique(), ec_df, 'EC1', perm_df['EC1'].to_list()).sort_values(by='where')
-    message = "a signficant EC class prediction"
-    
-    # second level
-    if sig_results1.shape[0]>0:
-        ec_sub_df = ec_df.loc[ec_df['EC1'].isin(sig_results1['EC'])]
-        sig_results2 = find_EC_pval(ec_sub_df['EC2'].unique(), ec_df, 'EC2', perm_df['EC2'].to_list()).sort_values(by='where')
-        sig_results = pd.concat([sig_results1, sig_results2])
-        
-        # third level
-        if sig_results2.shape[0]>0:
-            ec_sub_df = ec_df.loc[ec_df['EC2'].isin(sig_results2['EC'])]
-            sig_results3 = find_EC_pval(ec_sub_df['EC3'].unique(), ec_df, 'EC3', perm_df['EC3'].to_list()).sort_values(by='where')
-            sig_results = pd.concat([sig_results, sig_results3])
-            
-            # fourth level
-            if sig_results3.shape[0]>0:
-                ec_sub_df = ec_df.loc[ec_df['EC3'].isin(sig_results3['EC'])]
-                sig_results4 = find_EC_pval(ec_sub_df['EC4'].unique(), ec_df, 'EC4', perm_df['EC4'].to_list()).sort_values(by='where')
-                sig_results = pd.concat([sig_results, sig_results4])
-                        
-            else:
-                message = message + ", but no significant sub-sub-class"                
-        else:
-            message = message + ", but no significant sub-class"        
-    else:
-        message = "no significant EC prediction"
-        sig_results=sig_results1
-    
-    return sig_results.reset_index(drop=True), message
-
-
-def return_query_results(DM, X_mol, id_to_index, rxn_to_ec, final, input_dir, output_dir, perm_df):
+def return_query_results(DM, X_mol, id_to_index, rxn_to_ec, final, input_dir, output_dir):
     t0=time.time()
     ranked_list = find_closest_rxns(DM, X_mol, id_to_index)
     closest_rxn, euc_dist = ranked_list[0]
     closest_ec = rxn_to_ec[closest_rxn]
-    
-    ecdf, message = predict_all_ECs(ranked_list, id_to_index, perm_df, rxn_to_ec)
 
+    ec1df = calc_odds_ratio(DM, X_mol, 1, id_to_index, rxn_to_ec)
+    ec1 = ec1df.iloc[0,1]
+    ec2df = calc_odds_ratio(DM, X_mol, 2, id_to_index, rxn_to_ec)
+    ec2df = ec2df.loc[ec2df['predicted_EC'].str.startswith(ec1)]
+    ec3df = calc_odds_ratio(DM, X_mol, 3, id_to_index, rxn_to_ec)
+    ec3df = ec3df.loc[ec3df['predicted_EC'].str.startswith(ec1)]
+
+    result_df = pd.concat([ec1df,ec2df,ec3df], 
+          keys=['EC_1places','EC_2places', 'EC_3places'],
+         names=['Series name'])
+    
     t1=time.time()
-    print("\nFor " + DM + ":\nFinished predicting EC codes in " + "{:.2f}".format(t1-t0) + ' seconds,')
-    print("and there was " + message)
+    print("\nFor " + DM + ":\nFinished predicting EC codes in " + "{:.2f}".format(t1-t0) + ' seconds')
     print("All output files now in: " + output_dir + "\nand the closest MetaCyc reaction is " 
-          + closest_rxn.split('_')[0])
+          + closest_rxn.split('_')[0] 
+          + "_EC" 
+          + closest_ec + '\n')
     
     # save files
-    #shutil.copy(input_dir + "/UHGG_data/" + closest_rxn.split('_')[0] + "_UHGG_hms_tsv.pkl", 
-    #            output_dir + '/' + DM + '_enzyme_predictions.tsv.pkl')
-    #shutil.copy(input_dir + "/UHGG_data/" + closest_rxn.split('_')[0] +".png", 
-    #            output_dir + '/' + DM + '_enzyme_predictions.png')
-    ecdf.to_csv(output_dir + '/' + DM + '_EC_predictions.tsv', sep='\t', index=None)
+    shutil.copy(input_dir + "/UHGG_data/" + closest_rxn.split('_')[0] + "_UHGG_hms_tsv.pkl", 
+                output_dir + '/' + DM + '_enzyme_predictions.tsv.pkl')
+    shutil.copy(input_dir + "/UHGG_data/" + closest_rxn.split('_')[0] +".png", 
+                output_dir + '/' + DM + '_enzyme_predictions.png')
+    result_df.to_csv(output_dir + '/' + DM + '_EC_predictions.tsv', sep='\t')
     with open(output_dir + '/' + DM + "_distance_ranked_reactions.txt", "w") as file:
         file.write("\n".join(str(item) for item in ranked_list))
 
@@ -257,7 +214,6 @@ def main():
     id_to_index = pkl.load(open(input_dir + "/chem_data/MC_rxn_to_matrix_index_dict.p", 'rb'))
     rxn_to_ec = pkl.load(open(input_dir + "/chem_data/MC_rxn_ec_dict.p", 'rb'))
     final = pd.read_pickle(input_dir + "/chem_data/MetaCyc_reactions_tsv.p")
-    perm_df = pd.read_csv(input_dir + "/chem_data/ec_permutations.csv")
     
     print('\nPrecomputed data loaded')
     
@@ -290,7 +246,7 @@ def main():
         rxn_to_ec[dms_df.iloc[i,0]] = 'DM'
     
     for DM in dms_df['reaction'].values:
-        return_query_results(DM, X_mol, id_to_index, rxn_to_ec, final, input_dir, output_dir, perm_df)
+        return_query_results(DM, X_mol, id_to_index, rxn_to_ec, final, input_dir, output_dir)
 
 
 if __name__ == '__main__':
