@@ -1,76 +1,96 @@
-name: SIMMER
+name: SIMMER_local
 channels:
   - conda-forge
-  - biobakery
   - defaults
 dependencies:
-  - _libgcc_mutex=0.1=main
-  - _openmp_mutex=4.5=1_gnu
   - blas=1.0=mkl
-  - boost=1.74.0=py38hc10631b_3
-  - boost-cpp=1.74.0=h9359b55_0
-  - bottleneck=1.3.2=py38heb32a55_1
-  - bzip2=1.0.8=h7f98852_4
-  - ca-certificates=2021.10.8=ha878542_0
-  - cairo=1.16.0=hf32fb01_1
-  - certifi=2021.10.8=py38h578d9bd_1
+  - boost=1.74.0=py310h509978a_5
+  - boost-cpp=1.74.0=hff03dee_4
+  - bottleneck=1.3.4=py310h4e76f89_0
+  - brotli=1.0.9=h5eb16cf_7
+  - brotli-bin=1.0.9=h5eb16cf_7
+  - bzip2=1.0.8=h1de35cc_0
+  - ca-certificates=2021.10.8=h033912b_0
+  - cairo=1.16.0=h8023c5d_1
+  - certifi=2021.10.8=py310h2ec42d9_2
   - cycler=0.11.0=pyhd8ed1ab_0
-  - fontconfig=2.13.1=h6c09931_0
-  - freetype=2.10.4=h0708190_1
-  - glib=2.69.1=h4ff587b_1
-  - icu=67.1=he1b5a44_0
-  - intel-openmp=2021.4.0=h06a4308_3561
-  - jpeg=9d=h7f8727e_0
-  - kiwisolver=1.3.2=py38h295c915_0
-  - ld_impl_linux-64=2.35.1=h7274673_9
-  - libffi=3.3=he6710b0_2
-  - libgcc-ng=9.3.0=h5101ec6_17
-  - libgfortran-ng=7.5.0=ha8ba4b0_17
-  - libgfortran4=7.5.0=ha8ba4b0_17
-  - libgomp=9.3.0=h5101ec6_17
-  - libiconv=1.16=h516909a_0
-  - libpng=1.6.37=h21135ba_2
-  - libstdcxx-ng=9.3.0=hd4cf53a_17
-  - libtiff=4.0.10=hc3755c2_1005
-  - libuuid=1.0.3=h7f8727e_2
-  - libxcb=1.14=h7b6447c_0
-  - libxml2=2.9.10=h68273f3_2
-  - lz4-c=1.9.3=h9c3ff4c_1
-  - matplotlib-base=3.3.4=py38h0efea84_0
-  - mkl=2021.4.0=h06a4308_640
-  - mkl-service=2.4.0=py38h7f8727e_0
-  - mkl_fft=1.3.1=py38hd3c417c_0
-  - mkl_random=1.2.2=py38h51133e4_0
-  - ncurses=6.3=h7f8727e_2
-  - numexpr=2.8.1=py38h6abb31d_0
-  - numpy=1.21.2=py38h20f2e39_0
-  - numpy-base=1.21.2=py38h79a1101_0
-  - olefile=0.46=pyh9f0ad1d_1
-  - openssl=1.1.1m=h7f8727e_0
+  - expat=2.4.8=h96cf925_0
+  - fontconfig=2.14.0=h676cef8_0
+  - fonttools=4.33.2=py310h6c45266_0
+  - freetype=2.10.4=h4cff582_1
+  - gettext=0.21.0=h7535e17_0
+  - giflib=5.2.1=hbcb3906_2
+  - glib=2.69.1=h8346a28_1
+  - greenlet=1.1.2=py310h9d931ec_2
+  - icu=68.2=he49afe7_0
+  - intel-openmp=2021.4.0=hecd8cb5_3538
+  - jbig=2.1=h0d85af4_2003
+  - jpeg=9e=h5eb16cf_1
+  - kiwisolver=1.4.2=py310h6be76da_1
+  - lcms2=2.12=h577c468_0
+  - lerc=2.2.1=h046ec9c_0
+  - libblas=3.9.0=12_osx64_mkl
+  - libbrotlicommon=1.0.9=h5eb16cf_7
+  - libbrotlidec=1.0.9=h5eb16cf_7
+  - libbrotlienc=1.0.9=h5eb16cf_7
+  - libcblas=3.9.0=12_osx64_mkl
+  - libcxx=13.0.1=hc203e6f_0
+  - libdeflate=1.7=h35c211d_5
+  - libffi=3.3=hb1e8313_2
+  - libgfortran=3.0.1=h93005f0_2
+  - libiconv=1.16=haf1e3a3_0
+  - liblapack=3.9.0=12_osx64_mkl
+  - libpng=1.6.37=h7cec526_2
+  - libtiff=4.3.0=h1167814_1
+  - libwebp=1.2.2=h28dabe5_0
+  - libwebp-base=1.2.2=h0d85af4_1
+  - libxml2=2.9.10=h93ec3fd_4
+  - llvm-openmp=13.0.1=hcb1a161_1
+  - lz4-c=1.9.3=he49afe7_1
+  - matplotlib-base=3.5.1=py310hfc59cd6_0
+  - mkl=2021.4.0=hecd8cb5_637
+  - mkl-service=2.4.0=py310hca72f7f_0
+  - mkl_fft=1.3.1=py310hf879493_0
+  - mkl_random=1.2.2=py310hc081a56_0
+  - munkres=1.1.4=pyh9f0ad1d_0
+  - ncurses=6.3=hca72f7f_2
+  - numexpr=2.8.1=py310hdcd3fac_1
+  - numpy=1.22.3=py310hb608527_2
+  - openssl=1.1.1n=h6c3fc93_0
   - packaging=21.3=pyhd3eb1b0_0
-  - pandas=1.4.1=py38h295c915_0
-  - pcre=8.45=h9c3ff4c_0
-  - pillow=6.2.1=py38h6b7be26_0
-  - pip=21.2.4=py38h06a4308_0
-  - pixman=0.40.0=h36c2ea0_0
-  - pycairo=1.20.1=py38hf61ee4a_0
+  - pandas=1.4.2=py310he9d5cce_0
+  - pcre=8.45=he49afe7_0
+  - pillow=9.0.1=py310hde71d04_0
+  - pip=21.2.4=py310hecd8cb5_0
+  - pixman=0.40.0=hbcb3906_0
+  - pycairo=1.21.0=py310h5138a19_1
   - pyparsing=3.0.4=pyhd3eb1b0_0
-  - python=3.8.12=h12debd9_0
+  - python=3.10.4=hdfd78df_0
   - python-dateutil=2.8.2=pyhd3eb1b0_0
-  - python_abi=3.8=2_cp38
+  - python_abi=3.10=2_cp310
   - pytz=2021.3=pyhd3eb1b0_0
-  - rdkit=2020.09.5=py38h2bca085_0
-  - readline=8.1.2=h7f8727e_1
-  - reportlab=3.5.68=py38hadf75a6_0
-  - scipy=1.7.3=py38hc147768_0
-  - setuptools=58.0.4=py38h06a4308_0
+  - rdkit=2022.03.1=py310hf76a5f4_1
+  - readline=8.1.2=hca72f7f_1
+  - reportlab=3.5.68=py310h3301372_1
+  - scipy=1.7.3=py310h3dd3380_0
+  - setuptools=61.2.0=py310hecd8cb5_0
   - six=1.16.0=pyhd3eb1b0_1
-  - sqlalchemy=1.3.23=py38h497a2fe_0
-  - sqlite=3.37.2=hc218d9a_0
-  - tk=8.6.11=h1ccaba5_0
-  - tornado=6.1=py38h497a2fe_1
+  - sqlalchemy=1.4.35=py310h1961e1f_0
+  - sqlite=3.38.2=h707629a_0
+  - tk=8.6.11=h7bc2e8c_0
+  - tzdata=2022a=hda174b7_0
+  - unicodedata2=14.0.0=py310h1961e1f_1
   - wheel=0.37.1=pyhd3eb1b0_0
-  - xz=5.2.5=h7b6447c_0
-  - zlib=1.2.11=h7f8727e_4
-  - zstd=1.4.9=ha95c52a_0
-prefix: /pollard/home/abustion/miniconda3/envs/SIMMER
+  - xz=5.2.5=h1de35cc_0
+  - zlib=1.2.12=h4dc903c_2
+  - zstd=1.5.2=hcb37349_0
+  - pip:
+    - blinker==1.4
+    - click==8.1.2
+    - flask==2.1.1
+    - flask-navigation==0.2.0
+    - itsdangerous==2.1.2
+    - jinja2==3.1.1
+    - markupsafe==2.1.1
+    - werkzeug==2.1.1
+prefix: /Users/annamariebustion/miniconda3/envs/SIMMER_local

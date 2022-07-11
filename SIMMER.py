@@ -3,9 +3,8 @@
 # 2022_02
 # 
 #    example query
-#$ python3 SIMMER.py -i /pollard/data/projects/drug_metabolism/SIMMER_files -o ./ 
+#$ python3 SIMMER.py -i <path_to>/SIMMER_files -o <path_to>/output_files 
 ######################################
-
 
 #import mkl
 import pickle as pkl
@@ -22,11 +21,12 @@ import time
 import argparse
 import os
 import shutil
+import glob as glob
 
 
 def run_rxn(row, df):
-    sms_l = df.iloc[row,3].split(' // ')
-    sms_r = df.iloc[row,4].split(' // ')
+    sms_l = df.iloc[row,3].split('.')
+    sms_r = df.iloc[row,4].split('.')
     
     smas_l = []
     for sm in sms_l:
@@ -200,7 +200,20 @@ def predict_all_ECs(ranked_list, id_to_index, perm_df, rxn_to_ec):
     return sig_results.reset_index(drop=True), message
 
 
-def return_query_results(DM, X_mol, id_to_index, rxn_to_ec, final, input_dir, output_dir, perm_df):
+def pull_tsv_results(tsv_file):
+    df = pd.read_csv(tsv_file, sep='\t', header=None)
+    
+    df.columns= ['hit_id', 'hit_descript', 'Lineage', 'Phylum',
+             'full_seq_evalue','full_seq_bitscore', 'total_len',
+             'hit_num_domains', 'hit_domain_indices', 'best_domain_evalue',
+             'Genome', 'Genome_type', 'Original_name', 'GC_content', 'genome','uhgg_name','genome2','?','prev',
+                  'abund']
+    
+    return df
+
+
+def return_query_results(DM, X_mol, id_to_index, rxn_to_ec, final, input_dir, output_dir,
+                         perm_df, prot_dict):
     t0=time.time()
     ranked_list = find_closest_rxns(DM, X_mol, id_to_index)
     closest_rxn, euc_dist = ranked_list[0]
@@ -215,8 +228,33 @@ def return_query_results(DM, X_mol, id_to_index, rxn_to_ec, final, input_dir, ou
           + closest_rxn.split('_')[0])
     
     # save files
-    #shutil.copy(input_dir + "/UHGG_data/" + closest_rxn.split('_')[0] + "_UHGG_hms_tsv.pkl", 
-    #            output_dir + '/' + DM + '_enzyme_predictions.tsv.pkl')
+    files = prot_dict[closest_rxn.split('_')[0]]
+    #fastas
+    read_files=[]
+    for file in files:
+        f = glob.glob(input_dir + "/prot_data/" + file + '*fasta')
+        read_files.append(f[0])
+    with open(output_dir + '/' + DM + '_enzyme_predictions.fasta','wb') as wfd:
+        for fasta in read_files:
+            with open(fasta,'rb') as fd:
+                shutil.copyfileobj(fd, wfd)
+    #tsvs
+    output_df=pd.DataFrame()
+    read_files=[]
+    for file in files:
+        f = glob.glob(input_dir + "/prot_data/" + file + '*tsv')
+        read_files.append(f[0])
+    for tsv in read_files:
+        try:
+            output_df = pd.concat([output_df, pull_tsv_results(tsv)])
+        except:
+            continue
+    output_df[['hit_id', 'hit_descript', 'Lineage', 'Phylum',
+             'full_seq_evalue','full_seq_bitscore', 'total_len',
+             'hit_num_domains', 'hit_domain_indices', 'best_domain_evalue',
+             'Genome', 'Genome_type', 'Original_name', 'GC_content', 'uhgg_name','prev',
+                  'abund']].to_csv(output_dir + '/' + DM + '_enzyme_predictions.tsv', sep='\t', index=None)
+
     #shutil.copy(input_dir + "/UHGG_data/" + closest_rxn.split('_')[0] +".png", 
     #            output_dir + '/' + DM + '_enzyme_predictions.png')
     ecdf.to_csv(output_dir + '/' + DM + '_EC_predictions.tsv', sep='\t', index=None)
@@ -258,7 +296,7 @@ def main():
     rxn_to_ec = pkl.load(open(input_dir + "/chem_data/MC_rxn_ec_dict.p", 'rb'))
     final = pd.read_pickle(input_dir + "/chem_data/MetaCyc_reactions_tsv.p")
     perm_df = pd.read_csv(input_dir + "/chem_data/ec_permutations.csv")
-    
+    prot_dict = pkl.load(open(input_dir + "/prot_data/prot_dict.p", 'rb'))
     print('\nPrecomputed data loaded')
     
     #load and run query
@@ -266,12 +304,14 @@ def main():
         dms_df = pd.read_csv(query, sep='\t')
     else:
         reaction = input("\nEnter a reaction identifier (e.g. DM1): ")
-        left_comp = input("\nEnter substrate name (e.g. 4-asa): ")
-        right_comp = input("\nEnter product name (e.g. n-acetyl-4-asa): ")
-        left_smiles = input("\nEnter the SMILES of substrate(s) and known cofactors separated by '//' \ne.g. C1=CC(=C(C=C1N)O)C(=O)O // CC(=O)SCCNC(=O)CCNC(=O)[C@@H](C(C)(C)COP(=O)(O)OP(=O)(O)OC[C@@H]1[C@H]([C@H]([C@@H](O1)N2C=NC3=C(N=CN=C32)N)O)OP(=O)(O)O)O : ") 
-        right_smiles = input("\nEnter the SMILES of product(s) separated by '//' \ne.g. CC(=O)NC1=CC(=C(C=C1)C(=O)O)O // CC(C)(COP(=O)(O)OP(=O)(O)OC[C@@H]1[C@H]([C@H]([C@@H](O1)N2C=NC3=C(N=CN=C32)N)O)OP(=O)(O)O)[C@H](C(=O)NCCC(=O)NCCS)O : ") 
+        left_comp = input("\nEnter substrate name (e.g. gemcitabine): ")
+        right_comp = input("\nEnter product name (e.g. 2′, 2′-difluorodeoxyuridine): ")
+        left_smiles = input("\nEnter the SMILES of substrate(s) and known cofactors separated by '.' \nexample NC1=NC(=O)N(C=C1)[C@@H]1O[C@H](CO)[C@@H](O)C1(F)F.O.[H+] : ") 
+        right_smiles = input("\nEnter the SMILES of product(s) separated by '.' \nexample OC[C@H]1O[C@@H](N2C=CC(=O)NC2=O)C(F)(F)[C@@H]1O.[NH4+] : ") 
+
+        if len(left_smiles) + len(right_smiles) != 0:
         
-        dms_df = pd.DataFrame([[reaction, 
+            dms_df = pd.DataFrame([[reaction, 
                                 left_comp, 
                                 right_comp, 
                                 left_smiles,
@@ -279,7 +319,11 @@ def main():
                               columns = ['reaction',
                                          'left_comp', 'right_comp', 
                                          'left_smiles','right_smiles'])
- 
+
+        elif len(left_smiles) + len(right_smiles) ==0:
+            print('No queries provided')
+            sys.exit()
+        
     X_mol = add_queries_to_tanimoto(fp_queries(dms_df, fps), tan_ar)
     
     ### add in eigendecomposition stuff later (will require the eigen fx, num pcs, and num_threads ###
@@ -290,7 +334,8 @@ def main():
         rxn_to_ec[dms_df.iloc[i,0]] = 'DM'
     
     for DM in dms_df['reaction'].values:
-        return_query_results(DM, X_mol, id_to_index, rxn_to_ec, final, input_dir, output_dir, perm_df)
+        return_query_results(DM, X_mol, id_to_index, rxn_to_ec, final, input_dir,
+                             output_dir, perm_df, prot_dict)
 
 
 if __name__ == '__main__':
