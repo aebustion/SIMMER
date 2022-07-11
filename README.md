@@ -12,14 +12,9 @@ To run command-line SIMMER, the user will need the appropriate conda environment
 This can be found at /pollard/data/projects/drug_metabolism/SIMMER_files or can be downloaded at https://www.dropbox.com/s/1u21oha2y0cxv2q/SIMMER_files.tar.gz?dl=0
 
 These files contain all the precomputed data needed to run any SIMMER queries: 
-* precomputed hmmsearch results (tsvs and pngs of phylogenies) of the UHGG database (this is just a very small sample of the full database at the moment 03/2022)
-* fingerprints of all MetaCyc reactions, 
-* a pairwise tanimoto similarity matrix for all MetaCyc fingerprints, and
-* three dictionaries
-  * MetaCyc reaction:EC commission numbers, 
-  * MetaCyc reaction:PANTHER subfamily, and 
-  * MetaCyc reaction:tanimoto matrix index
-
+* precomputed hmmsearch results (tsvs and fastas) of the UHGG database
+* fingerprints and pairwise tanimoto similarity matrix for all MetaCyc fingerprints
+* dictionaries needed to link chemical and protein data
  
  ## Input format
  If the user has more than a few queries, they will want to input their queries as a tsv file organized as follows:
@@ -41,8 +36,8 @@ These files contain all the precomputed data needed to run any SIMMER queries:
  * DM_distance_ranked_rxns.txt (a file containing all MetaCyc reactions' euclidean distances to the input query, sorted from closest to farthest)
  * DM_EC_predictions.tsv (a tsv file containing SIMMER's predicted EC numbers for the query reaction)
  * DM_enzyme_predictions.fasta (a fasta file containing all predicted bacterial enzymes in the human gut capable of the query reaction)
- * DM_enzyme_predictions.tsv.pkl (a pickled tsv file summarizing all predicted bacterial enzymes in the human gut capable of the query reaction)
- * DM_enzyme_predictions.png (a tree representation of the above predicted bacterial enzymes in the human gut)
+ * DM_enzyme_predictions.tsv (a  tsv file summarizing all predicted bacterial enzymes in the human gut capable of the query reaction)
+ * coming soon: DM_enzyme_predictions.png (a tree representation of the above predicted bacterial enzymes in the human gut)
  
  ## Run an example query using command line SIMMER tool
 
