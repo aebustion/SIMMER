@@ -90,9 +90,13 @@ def fp_queries(dms_df, fps):
     print("\nDescribing input reactions...")
     t0 = time.time()
     for i in range(len(dms_df)):
-        rxn = run_rxn(i, dms_df)
-        fp = Chem.rdChemReactions.CreateDifferenceFingerprintForReaction(rxn)
-        fps.append(fp)
+        try:
+            rxn = run_rxn(i, dms_df)
+            fp = Chem.rdChemReactions.CreateDifferenceFingerprintForReaction(rxn)
+            fps.append(fp)
+        except:
+            print("Improperly formatted SMILES; please refer to your compound's pubchem entry for appropriate SMILES, and remember to separate multiple substrates or multiple products by a period.")
+            sys.exit()
     t1 = time.time()
     print("\nFinished creating fingerprints of queries in " + "{:.2f}".format(t1-t0) + " seconds")
     return fps
