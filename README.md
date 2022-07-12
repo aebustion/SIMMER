@@ -1,5 +1,5 @@
 # SIMMER
-Use chemical and protein Similarity to Identify MicrobioMe Enzymatic Reactions
+Use chemical and protein Similarity to Identify MicrobioMe Enzymatic Reactions.
 
 ![alt text](https://github.com/aebustion/SIMMER/blob/main/SIMMER_architecture.png?raw=true)
 
@@ -34,7 +34,7 @@ These files contain all the precomputed data needed to run any SIMMER queries:
  
  
  ## Output
- After running a SIMMER query, the user will obtain five files:
+ After running a SIMMER query, the user will obtain five files in about ~10-13 seconds:
  * DM_distance_ranked_rxns.txt (a file containing all MetaCyc reactions' euclidean distances to the input query, sorted from closest to farthest)
  * DM_EC_predictions.tsv (a tsv file containing SIMMER's predicted EC numbers for the query reaction)
  * DM_enzyme_predictions.fasta (a fasta file containing all predicted bacterial enzymes in the human gut capable of the query reaction)
