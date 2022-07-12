@@ -1,5 +1,7 @@
 # SIMMER
-Use chemical and protein similarity to identify microbiome-mediated enzymatic reactions
+Use chemical and protein Similarity to Identify MicrobioMe Enzymatic Reactions
+
+![alt text](https://www.dropbox.com/s/buu2qwg7pv8v0ic/Screen%20Shot%202022-07-12%20at%207.13.29%20AM.png?dl=0)
 
 ## Conda environment
 To run command-line SIMMER, the user will need the appropriate conda environment.
