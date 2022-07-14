@@ -253,11 +253,14 @@ def return_query_results(DM, X_mol, id_to_index, rxn_to_ec, final, input_dir, ou
             output_df = pd.concat([output_df, pull_tsv_results(tsv)])
         except:
             continue
-    output_df[['hit_id', 'hit_descript', 'Lineage', 'Phylum',
+    try:
+        output_df[['hit_id', 'hit_descript', 'Lineage', 'Phylum',
              'full_seq_evalue','full_seq_bitscore', 'total_len',
              'hit_num_domains', 'hit_domain_indices', 'best_domain_evalue',
              'Genome', 'Genome_type', 'Original_name', 'GC_content', 'uhgg_name','prev',
                   'abund']].to_csv(output_dir + '/' + DM + '_enzyme_predictions.tsv', sep='\t', index=None)
+    except:
+        output_df.to_csv(output_dir + '/' + DM + '_enzyme_predictions.tsv', sep='\t', index=None)
 
     #shutil.copy(input_dir + "/UHGG_data/" + closest_rxn.split('_')[0] +".png", 
     #            output_dir + '/' + DM + '_enzyme_predictions.png')
