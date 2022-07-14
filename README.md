@@ -14,7 +14,8 @@ To run command-line SIMMER, the user will need the appropriate conda environment
 
 ## Precomputed Data
 This can be downloaded from https://www.dropbox.com/s/1u21oha2y0cxv2q/SIMMER_files.tar.gz?dl=0
-\nThis precomputed data takes up ~18G once unzipped. A website with built-in database to make this lower impact on the user will be available soon. Check back here for the link.
+
+This precomputed data takes up ~18G once unzipped. A website with built-in database to make this lower impact on the user will be available soon. Check back here for the link.
 
 These files contain all the precomputed data needed to run any SIMMER queries: 
 * precomputed hmmsearch results (tsvs and fastas) of the UHGG database
