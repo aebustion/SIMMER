@@ -2,8 +2,8 @@
 # Annamarie Bustion
 # 2022_02
 # 
-#    example query
-#$ python3 SIMMER.py -i <path_to>/SIMMER_files -o <path_to>/output_files 
+#example query
+#$ python3 SIMMER.py -i <path_to>/SIMMER_files -o <path_to_output_dir>
 ######################################
 
 #import mkl
@@ -16,6 +16,8 @@ from rdkit import Chem
 from rdkit.Chem import AllChem
 from rdkit.Chem import rdChemReactions
 from rdkit import DataStructs
+from rdkit.Chem import Draw
+from rdkit.Chem.Draw import rdMolDraw2D
 import sys
 import time
 import argparse
@@ -24,7 +26,7 @@ import shutil
 import glob as glob
 
 
-def run_rxn(row, df):
+def run_rxn(row, df, output_dir):
     sms_l = df.iloc[row,3].split('.')
     sms_r = df.iloc[row,4].split('.')
     
@@ -43,6 +45,12 @@ def run_rxn(row, df):
     right = '.'.join(map(str,smas_r))
     
     rxn = rdChemReactions.ReactionFromSmarts(left + '>>' + right)
+    
+    drawer = rdMolDraw2D.MolDraw2DCairo(800, 200)
+    drawer.DrawReaction(rxn)
+    drawer.FinishDrawing()
+    drawer.WriteDrawingText(output_dir + '/' + df.iloc[row,0] + '_input_reaction.png')
+    
     return rxn
 
 '''
@@ -86,12 +94,12 @@ def find_closest_rxns(query_id, X_mol, id_to_index):
     return [x for x in results if not x[0].startswith('DM')]
         
 
-def fp_queries(dms_df, fps):
+def fp_queries(dms_df, fps, output_dir):
     print("\nDescribing input reactions...")
     t0 = time.time()
     for i in range(len(dms_df)):
         try:
-            rxn = run_rxn(i, dms_df)
+            rxn = run_rxn(i, dms_df, output_dir)
             fp = Chem.rdChemReactions.CreateDifferenceFingerprintForReaction(rxn)
             fps.append(fp)
         except:
@@ -265,8 +273,10 @@ def return_query_results(DM, X_mol, id_to_index, rxn_to_ec, final, input_dir, ou
     #shutil.copy(input_dir + "/UHGG_data/" + closest_rxn.split('_')[0] +".png", 
     #            output_dir + '/' + DM + '_enzyme_predictions.png')
     ecdf.to_csv(output_dir + '/' + DM + '_EC_predictions.tsv', sep='\t', index=None)
-    with open(output_dir + '/' + DM + "_distance_ranked_reactions.txt", "w") as file:
-        file.write("\n".join(str(item) for item in ranked_list))
+    pd.DataFrame(ranked_list, 
+                 columns=['MetaCyc Rxn', 
+                          'Euclidean distance to query']).to_csv(output_dir + '/' + DM + "_distance_ranked_reactions.tsv",
+                                                                 sep='\t', index=None)
 
     
 def get_arguments():
@@ -331,7 +341,7 @@ def main():
             print('No queries provided')
             sys.exit()
         
-    X_mol = add_queries_to_tanimoto(fp_queries(dms_df, fps), tan_ar)
+    X_mol = add_queries_to_tanimoto(fp_queries(dms_df, fps, output_dir), tan_ar)
     
     ### add in eigendecomposition stuff later (will require the eigen fx, num pcs, and num_threads ###
     
