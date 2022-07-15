@@ -319,6 +319,9 @@ def main():
     #load and run query
     if query != None:
         dms_df = pd.read_csv(query, sep='\t')
+        if dms_df.shape[1] != 5:
+            print("Improperly formatted input tsv. Make sure file is tab delimited, and contains 5 columns of information (DM<id>, substrate name, product name, substrate(s) SMILES delimited by . , product(s) SMILES delimited by . )")
+            sys.exit()
     else:
         reaction = input("\nEnter a reaction identifier (e.g. DM1): ")
         left_comp = input("\nEnter substrate name (e.g. gemcitabine): ")
