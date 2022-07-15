@@ -228,34 +228,27 @@ def return_query_results(DM, X_mol, id_to_index, rxn_to_ec, final, input_dir, ou
                          perm_df, prot_dict):
     t0=time.time()
     ranked_list = find_closest_rxns(DM, X_mol, id_to_index)
-    closest_rxn, euc_dist = ranked_list[0]
-    closest_ec = rxn_to_ec[closest_rxn]
     
     ecdf, message = predict_all_ECs(ranked_list, id_to_index, perm_df, rxn_to_ec)
-
     t1=time.time()
     print("\nFor " + DM + ":\nFinished predicting EC codes in " + "{:.2f}".format(t1-t0) + ' seconds,')
     print("and there was " + message)
-    print("All output files now in: " + output_dir + "\nand the closest MetaCyc reaction is " 
-          + closest_rxn.split('_')[0])
-    
-    # save files
-    files = prot_dict[closest_rxn.split('_')[0]]
-    #fastas
-    read_files=[]
-    for file in files:
-        f = glob.glob(input_dir + "/prot_data/" + file + '*fasta')
-        read_files.append(f[0])
-    with open(output_dir + '/' + DM + '_enzyme_predictions.fasta','wb') as wfd:
-        for fasta in read_files:
-            with open(fasta,'rb') as fd:
-                shutil.copyfileobj(fd, wfd)
+
+    #find closest rxn with homologs
+    for i in range(len(ranked_list)):
+        read_files=[]
+        num_lines=0
+        closest_rxn, euc_dist = ranked_list[i]
+        files = prot_dict[closest_rxn.split('_')[0]]
+        for file in files:
+            f = glob.glob(input_dir + "/prot_data/" + file + '*tsv')
+            num_lines = num_lines + sum(1 for line in open(f[0]))
+            read_files.append(f[0])
+        if num_lines > 1:
+            break
+
     #tsvs
     output_df=pd.DataFrame()
-    read_files=[]
-    for file in files:
-        f = glob.glob(input_dir + "/prot_data/" + file + '*tsv')
-        read_files.append(f[0])
     for tsv in read_files:
         try:
             output_df = pd.concat([output_df, pull_tsv_results(tsv)])
@@ -269,14 +262,28 @@ def return_query_results(DM, X_mol, id_to_index, rxn_to_ec, final, input_dir, ou
                   'abund']].to_csv(output_dir + '/' + DM + '_enzyme_predictions.tsv', sep='\t', index=None)
     except:
         output_df.to_csv(output_dir + '/' + DM + '_enzyme_predictions.tsv', sep='\t', index=None)
+    
+    #fastas
+    read_files=[]
+    for file in files:
+        f = glob.glob(input_dir + "/prot_data/" + file + '*fasta')
+        read_files.append(f[0])
+    with open(output_dir + '/' + DM + '_enzyme_predictions.fasta','wb') as wfd:
+        for fasta in read_files:
+            with open(fasta,'rb') as fd:
+                shutil.copyfileobj(fd, wfd)
 
-    #shutil.copy(input_dir + "/UHGG_data/" + closest_rxn.split('_')[0] +".png", 
-    #            output_dir + '/' + DM + '_enzyme_predictions.png')
+    #EC predictions
     ecdf.to_csv(output_dir + '/' + DM + '_EC_predictions.tsv', sep='\t', index=None)
+    
+    #Ranked reactions
     pd.DataFrame(ranked_list, 
                  columns=['MetaCyc Rxn', 
                           'Euclidean distance to query']).to_csv(output_dir + '/' + DM + "_distance_ranked_reactions.tsv",
                                                                  sep='\t', index=None)
+    
+    print("All output files now in: " + output_dir + "\nand the closest MetaCyc reaction with gut homologs is " 
+          + closest_rxn.split('_')[0])
 
     
 def get_arguments():
