@@ -3,7 +3,7 @@ Use chemical and protein Similarity to Identify MicrobioMe Enzymatic Reactions.
 
 ![alt text](https://github.com/aebustion/SIMMER/blob/main/SIMMER_architecture.png?raw=true)
 
-Raise an issue or email annamarie.bustion@gladstone.ucsf.edu if you encounter any problems.
+Raise an issue or email annamarie.bustion@gladstone.ucsf.edu if you encounter any problems. This code is still getting actively updated.
 
 ## Conda environment
 To run command-line SIMMER, the user will need the appropriate conda environment.
