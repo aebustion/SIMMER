@@ -1,6 +1,8 @@
 # SIMMER
 Use chemical and protein Similarity to Identify MicrobioMe Enzymatic Reactions.
 
+This tool can be used directly on the web at https://simmer.pollard.gladstone.org/. To query more than ten input reactions at a time, please read on for use of the command-line tool.
+
 ![alt text](https://github.com/aebustion/SIMMER/blob/main/SIMMER_architecture.png?raw=true)
 
 Raise an issue or email annamarie.bustion@gladstone.ucsf.edu if you encounter any problems. This code is still getting actively updated.
