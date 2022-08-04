@@ -1,5 +1,5 @@
 # SIMMER
-Use chemical and protein Similarity to Identify MicrobioMe Enzymatic Reactions.
+Use chemical and protein <U>Similarity to Identify MicrobioMe Enzymatic Reactions</U>. https://doi.org/10.1101/2022.08.02.502504
 
 This tool can be used directly on the web at https://simmer.pollard.gladstone.org/. To query more than ten input reactions at a time, please read on for use of the command-line tool.
 
