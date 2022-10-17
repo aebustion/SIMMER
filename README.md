@@ -10,9 +10,9 @@ Raise an issue or email annamarie.bustion@gladstone.ucsf.edu if you encounter an
 ## Conda environment
 To run command-line SIMMER, the user will need the appropriate conda environment.
 
-`$ conda env create --file SIMMER.yml`
+`$ conda env create --file SIMMER_local.yml`
 
-`$ source activate SIMMER`
+`$ source activate SIMMER_local`
 
 ## Precomputed Data (updated files on 2022_07_28 - please redownload to be up-to-date)
 This can be downloaded from https://www.dropbox.com/s/1u21oha2y0cxv2q/SIMMER_files.tar.gz?dl=0
