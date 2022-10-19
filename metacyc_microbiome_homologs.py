@@ -1,24 +1,15 @@
-# SIMMER.py
+# metacyc_microbiome_homologs.py
 # Annamarie Bustion
-# 2022_02
+# 2022_10
 # 
 #example query
-#$ python3 metacyc_microbiome_homologs.py -i <path_to>/SIMMER_files -o <path_to_output_dir>
+#$ python3 metacyc_microbiome_homologs.py -i <path_to>/SIMMER_files -o <path_to_output_dir> -q RXN-11469
 ######################################
 
 import pickle as pkl
 import pandas as pd
 import numpy as np
-from numpy import linalg as LA
-import scipy.stats as stats
-from rdkit import Chem
-from rdkit.Chem import AllChem
-from rdkit.Chem import rdChemReactions
-from rdkit import DataStructs
-from rdkit.Chem import Draw
-from rdkit.Chem.Draw import rdMolDraw2D
 import sys
-import time
 import argparse
 import os
 import shutil
