@@ -18,6 +18,7 @@ from rdkit.Chem import rdChemReactions
 from rdkit import DataStructs
 from rdkit.Chem import Draw
 from rdkit.Chem.Draw import rdMolDraw2D
+from rdkit.Chem.AtomPairs import Pairs
 import sys
 import time
 import argparse
@@ -26,59 +27,14 @@ import shutil
 import glob as glob
 
 
-def run_rxn(row, df, output_dir):
-    sms_l = df.iloc[row,3].split('.')
-    sms_r = df.iloc[row,4].split('.')
+def run_substrate(row, df, output_dir):
+#    print(df.iloc[row,3])
+    sms_l = df.iloc[row,3].split('.')[0]
+#    print(sms_l)
+    m_l = Chem.MolFromSmiles(sms_l, sanitize=True)
     
-    smas_l = []
-    for sm in sms_l:
-        m = Chem.MolFromSmiles(sm.replace('R', '*'))
-        sma = Chem.MolToSmarts(m, isomericSmiles=True)
-        smas_l.append(sma)
-    smas_r = []
-    for sm in sms_r:
-        m = Chem.MolFromSmiles(sm.replace('R', '*'))
-        sma = Chem.MolToSmarts(m, isomericSmiles=True)
-        smas_r.append(sma)
-        
-    left = '.'.join(map(str,smas_l))
-    right = '.'.join(map(str,smas_r))
-    
-    rxn = rdChemReactions.ReactionFromSmarts(left + '>>' + right)
-    
-    drawer = rdMolDraw2D.MolDraw2DCairo(800, 200)
-    drawer.DrawReaction(rxn)
-    drawer.FinishDrawing()
-    drawer.WriteDrawingText(output_dir + '/' + df.iloc[row,0] + '_input_reaction.png')
-    
-    return rxn
+    return m_l
 
-'''
-def do_eigen_decomp(similarities,output_dir,n_factors):
-    print("\nStarting eigen decomp...")
-    D, V = LA.eigh(np.array(similarities))
-    for f in n_factors:
-        t0 = time.time()
-        V_fin = V[:,-int(f):]
-        D_fin = D[-int(f):]
-        D_half = np.sqrt(D_fin)
-        D_half = np.diag(D_half)
-        X_mol = np.dot(V_fin,D_half)
-        t1 = time.time()
-        print("\nFinished eigen decomp for " + str(f) + " factors in " + "{:.2f}".format(t1-t0) + " seconds")
-        pkl.dump(X_mol, open(str(output_dir) + str(f) + '_factors.p', "wb"))
-        '''
-
-        
-'''
-#necessary for handling the NILS in ec_dict while building list comprehension
-def catch(f):
-    try:
-        return f
-    except IndexError:
-        return 'NIL'
-'''
-    
 def find_closest_rxns(query_id, X_mol, id_to_index):
     dists = {}
     vec = id_to_index[query_id]
@@ -99,11 +55,11 @@ def fp_queries(dms_df, fps, output_dir):
     t0 = time.time()
     for i in range(len(dms_df)):
         try:
-            rxn = run_rxn(i, dms_df, output_dir)
-            fp = Chem.rdChemReactions.CreateDifferenceFingerprintForReaction(rxn)
+            sub = run_substrate(i, dms_df, output_dir)
+            fp = Pairs.GetAtomPairFingerprintAsBitVect(sub)
             fps.append(fp)
         except:
-            print("Improperly formatted SMILES; please refer to your compound's pubchem entry for appropriate SMILES, and remember to separate multiple substrates or multiple products by a period.")
+            print("Improperly formatted SMILES; please refer to your compound's pubchem entry for appropriate SMILES")
             sys.exit()
     t1 = time.time()
     print("\nFinished creating fingerprints of queries in " + "{:.2f}".format(t1-t0) + " seconds")
@@ -195,14 +151,6 @@ def predict_all_ECs(ranked_list, id_to_index, perm_df, rxn_to_ec):
             sig_results3 = find_EC_pval(ec_sub_df['EC3'].unique(), ec_df, 'EC3', perm_df['EC3'].to_list()).sort_values(by='where')
             sig_results = pd.concat([sig_results, sig_results3])
             
-            # fourth level
-#            if sig_results3.shape[0]>0:
-#                ec_sub_df = ec_df.loc[ec_df['EC3'].isin(sig_results3['EC'])]
-#                sig_results4 = find_EC_pval(ec_sub_df['EC4'].unique(), ec_df, 'EC4', perm_df['EC4'].to_list()).sort_values(by='where')
-#                sig_results = pd.concat([sig_results, sig_results4])
-#                        
-#            else:
-#                message = message + ", but no significant sub-sub-class"                
         else:
             message = message + ", but no significant sub-class"        
     else:
@@ -277,15 +225,10 @@ def return_query_results(DM, X_mol, id_to_index, rxn_to_ec, final, input_dir, ou
     ecdf.to_csv(output_dir + '/' + DM + '_EC_predictions.tsv', sep='\t', index=None)
     
     #Ranked reactions
-    dist_df=pd.DataFrame(ranked_list,
-                 columns=['MetaCyc Rxn',
-                          'Euclidean distance to query'])
-    dist_df['Euclidean distance to query']=dist_df['Euclidean distance to query'].astype('float').values/dist_df['Euclidean distance to query'].astype('float').values[-1]
-    dist_df.to_csv(output_dir + '/' + DM + "_distance_ranked_reactions.tsv", sep='\t', index=None)
-    #pd.DataFrame(ranked_list, 
-    #             columns=['MetaCyc Rxn', 
-    #                      'Euclidean distance to query']).to_csv(output_dir + '/' + DM + "_distance_ranked_reactions.tsv",
-    #                                                             sep='\t', index=None)
+    pd.DataFrame(ranked_list, 
+                 columns=['MetaCyc Rxn', 
+                          'Euclidean distance to query']).to_csv(output_dir + '/' + DM + "_distance_ranked_reactions.tsv",
+                                                                 sep='\t', index=None)
     
     print("All output files now in: " + output_dir + "\nand the closest MetaCyc reaction with gut homologs is " 
           + closest_rxn.split('_')[0])
@@ -319,8 +262,8 @@ def main():
 
     #load MetaCyc data
     #load data
-    fps = pkl.load(open(input_dir + "/chem_data/MC_rxn_fps.p", 'rb'))
-    tan_ar = pkl.load(open(input_dir + "/chem_data/MC_rxn_tanimoto_matrix.p", 'rb'))
+    fps = pkl.load(open(input_dir + "/chem_data/MC_sub_fps.p", 'rb'))
+    tan_ar = pkl.load(open(input_dir + "/chem_data/MC_sub_tanimoto_matrix.p", 'rb'))
     id_to_index = pkl.load(open(input_dir + "/chem_data/MC_rxn_to_matrix_index_dict.p", 'rb'))
     rxn_to_ec = pkl.load(open(input_dir + "/chem_data/MC_rxn_ec_dict.p", 'rb'))
     final = pd.read_pickle(input_dir + "/chem_data/MetaCyc_reactions_tsv.p")
@@ -337,11 +280,11 @@ def main():
                 print("Improperly formatted input tsv. Make sure file is tab delimited, and contains 5 columns of information (DM<id>, substrate name, product name, substrate(s) SMILES delimited by . , product(s) SMILES delimited by . )")
                 sys.exit()
     else:
-        reaction = input("\nEnter a reaction identifier (e.g. DM1): ")
+        reaction = input("\nEnter a substrate identifier (e.g. DM1): ")
         left_comp = input("\nEnter substrate name (e.g. gemcitabine): ")
-        right_comp = input("\nEnter product name (e.g. 2′, 2′-difluorodeoxyuridine): ")
-        left_smiles = input("\nEnter the SMILES of substrate(s) and known cofactors separated by '.' \nexample NC1=NC(=O)N(C=C1)[C@@H]1O[C@H](CO)[C@@H](O)C1(F)F.O.[H+] : ") 
-        right_smiles = input("\nEnter the SMILES of product(s) separated by '.' \nexample OC[C@H]1O[C@@H](N2C=CC(=O)NC2=O)C(F)(F)[C@@H]1O.[NH4+] : ") 
+        right_comp = 'placeholder' #input("\nEnter product name (e.g. 2′, 2′-difluorodeoxyuridine): ")
+        left_smiles = input("\nEnter the SMILES of substrate \nexample OC[C@H]1O[C@@H](N2C=CC(=O)NC2=O)C(F)(F)[C@@H]1O : ") 
+        right_smiles = 'placeholder' #input("\nEnter the SMILES of product(s) separated by '.' \nexample OC[C@H]1O[C@@H](N2C=CC(=O)NC2=O)C(F)(F)[C@@H]1O.[NH4+] : ") 
 
         if len(left_smiles) + len(right_smiles) != 0:
         
