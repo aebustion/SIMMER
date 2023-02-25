@@ -50,13 +50,15 @@ These files contain all the precomputed data needed to run any SIMMER queries:
  * coming soon: DM_enzyme_predictions.png (a tree representation of the above predicted bacterial enzymes in the human gut)
  
  ## Run an example query using command line SIMMER tool
+To see all argument options:
+`$ python3 SIMMER.py -h`
 
 to run with multiple queries in tsv format:
-
 `$ python3 SIMMER.py -i <path_to_precomputed_data> -o <path_to_output_director> -q <path_to_query_df>`
-
 `$ python3 SIMMER.py -i /pollard/data/projects/drug_metabolism/SIMMER_files -o ./ -q ./queries.tsv`
 
 or to run with single command line entry (follow command line prompts to input the query):
-
 `$ python3 SIMMER.py -i /pollard/data/projects/drug_metabolism/SIMMER_files -o ./`
+
+Additionally, the user may wish to see which microbiome enzymes may be associated with a MetaCyc reaction of interest (i.e. Reverse SIMMER):
+`$ python3 metacyc_microbiome_homologs.py -i <path_to>/SIMMER_files -o <path_to_output_dir> -q RXN-11469`
