@@ -1,7 +1,7 @@
 # SIMMER
 Use chemical and protein Similarity to Identify MicrobioMe Enzymatic Reactions. https://doi.org/10.1101/2022.08.02.502504
 
-This tool can be used directly on the web at https://simmer.pollard.gladstone.org/. To query more than ten input reactions at a time, please read on for use of the command-line tool.
+This tool can be used directly on the web at https://simmer.pollard.gladstone.org/. To query more than ten input reactions at a time, or to consider more than one closest MetaCyc reaction, please read on for use of the command-line tool.
 
 ![alt text](https://github.com/aebustion/SIMMER/blob/main/Figure1.png?raw=true)
 
