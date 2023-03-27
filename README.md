@@ -31,7 +31,7 @@ This can be downloaded from https://simmer.pollard.gladstone.org//SIMMER_files.t
 `$ wget https://simmer.pollard.gladstone.org//SIMMER_files.tar.gz`\
 Once unzipped, the relevant files are located in <your_filepath>/usr/share/nginx/projects/simmer/SIMMER-website/SIMMER_files
 
-(This precomputed data takes up ~18G once unzipped. A website with built-in database to make this lower impact on the user will be available soon. Check back here for the link.)
+(This precomputed data takes up ~18G once unzipped. If space is a constraint, please use the webtool version of SIMMER available at https://simmer.pollard.gladstone.org/.
 
 These files contain all the precomputed data needed to run any SIMMER queries: 
 * precomputed hmmsearch results (tsvs and fastas) of the UHGG database
