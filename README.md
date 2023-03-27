@@ -5,7 +5,7 @@ This tool can be used directly on the web at https://simmer.pollard.gladstone.or
 
 ![alt text](https://github.com/aebustion/SIMMER/blob/main/Figure1.png?raw=true)
 
-Raise an issue or email annamarie.bustion@gladstone.ucsf.edu if you encounter any problems. This code is still getting actively updated.
+Raise an issue or email aebustion@gmail.com if you encounter any problems. This code is still getting actively updated.
 
 ## Conda environment
 To run command-line SIMMER, the user will need the appropriate conda environment.
