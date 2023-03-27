@@ -10,25 +10,25 @@ Raise an issue or email annamarie.bustion@gladstone.ucsf.edu if you encounter an
 ## Conda environment
 To run command-line SIMMER, the user will need the appropriate conda environment.
 
-`$ conda env create --file SIMMER_local.yml`
+`$ conda env create --file SIMMER_local.yml`\
 `$ source activate SIMMER_local`
 
 If "ResolvePackageNotFound" error is returned, you will manually create the SIMMER env and install the following packages:
 
-`$ conda create --name SIMMER_local python=3`
-`$ source activate SIMMER_local`
-`$ conda install -c conda-forge rdkit`
-`$ conda install -c conda-forge scipy`
+`$ conda create --name SIMMER_local python=3`\
+`$ source activate SIMMER_local`\
+`$ conda install -c conda-forge rdkit`\
+`$ conda install -c conda-forge scipy`\
 
 If for some reason an error such as ModuleNotFoundError: No module named 'module_name' occurs when running SIMMER, please find and install the relevant package from [anaconda](https://anaconda.org/).
 
-Once ready to run SIMMER, use
+Once ready to run SIMMER, use\
 `$ source activate SIMMER_local`
 
 ## Precomputed Data (updated files on 2022_07_28 - please redownload to be up-to-date)
 This can be downloaded from https://simmer.pollard.gladstone.org//SIMMER_files.tar.gz
 
-`$ wget https://simmer.pollard.gladstone.org//SIMMER_files.tar.gz`
+`$ wget https://simmer.pollard.gladstone.org//SIMMER_files.tar.gz`\
 Once unzipped, the relevant files are located in <your_filepath>/usr/share/nginx/projects/simmer/SIMMER-website/SIMMER_files
 
 (This precomputed data takes up ~18G once unzipped. A website with built-in database to make this lower impact on the user will be available soon. Check back here for the link.)
