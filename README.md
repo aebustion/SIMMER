@@ -18,7 +18,7 @@ If "ResolvePackageNotFound" error is returned, you will manually create the SIMM
 `$ conda create --name SIMMER_local python=3`\
 `$ source activate SIMMER_local`\
 `$ conda install -c conda-forge rdkit`\
-`$ conda install -c conda-forge scipy`\
+`$ conda install -c conda-forge scipy`
 
 If for some reason an error such as ModuleNotFoundError: No module named 'module_name' occurs when running SIMMER, please find and install the relevant package from [anaconda](https://anaconda.org/).
 
