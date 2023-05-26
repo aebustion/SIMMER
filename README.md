@@ -39,7 +39,7 @@ Once ready to run SIMMER, use\
 example commands are at the end of this README.
  
  ## Input format
- If the user has more than a few queries, they will want to input their queries as a tsv file organized as follows:
+ If the user has more than a few queries, they will want to input their queries as a tsv or csv file organized as seen in the multiple_queries_example.csv and as seen here:
  
 | reaction | left_comp | right_comp | left_smiles | right_smiles |
 | -------- | --------- | ---------- | ----------- | ------------ |
@@ -68,7 +68,7 @@ To see all argument options:\
 to run for a single query at a time (follow command line prompts to input the query):\
 `$ python3 SIMMER.py -i <path_to>/SIMMER_files -o <path_to_output_directory>`
 
-or to run with multiple queries in tsv format:\
+or to run with multiple queries in tsv or csv format (try using multiple_queries_example.csv as an example):\
 `$ python3 SIMMER.py -i <path_to>/SIMMER_files -o <path_to_output_dir> -q <path_to_query_df>`
 
 Additionally, the user may wish to see which microbiome enzymes may be associated with a MetaCyc reaction of interest (i.e. Reverse SIMMER):\
