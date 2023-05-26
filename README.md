@@ -65,11 +65,11 @@ Once ready to run SIMMER, use\
 To see all argument options:\
 `$ python3 SIMMER.py -h`
 
-to run with multiple queries in tsv format:\
-`$ python3 SIMMER.py -i <path_to_precomputed_data> -o <path_to_output_director> -q <path_to_query_df>`
-
-or to run with command line entry for a single query at a time (follow command line prompts to input the query):\
+to run for a single query at a time (follow command line prompts to input the query):\
 `$ python3 SIMMER.py -i /pollard/data/projects/drug_metabolism/SIMMER_files -o ./`
+
+or to run with multiple queries in tsv format:\
+`$ python3 SIMMER.py -i <path_to_precomputed_data> -o <path_to_output_director> -q <path_to_query_df>`
 
 Additionally, the user may wish to see which microbiome enzymes may be associated with a MetaCyc reaction of interest (i.e. Reverse SIMMER):\
 `$ python3 metacyc_microbiome_homologs.py -i <path_to>/SIMMER_files -o <path_to_output_dir> -q RXN-11469`
