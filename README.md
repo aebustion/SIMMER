@@ -7,6 +7,19 @@ This tool can be used directly on the web at https://simmer.pollard.gladstone.or
 
 Raise an issue or email aebustion@gmail.com if you encounter any problems. This code is still getting actively updated.
 
+## Precomputed Data
+This can be downloaded from https://simmer.pollard.gladstone.org//SIMMER_files.tar.gz
+
+`$ wget https://simmer.pollard.gladstone.org//SIMMER_files.tar.gz`\
+Once unzipped, the relevant files are located in <your_filepath>/usr/share/nginx/projects/simmer/SIMMER-website/SIMMER_files
+
+(This precomputed data takes up ~18G once unzipped. If space is a constraint, please use the webtool version of SIMMER available at https://simmer.pollard.gladstone.org/.
+
+These files contain all the precomputed data needed to run any SIMMER queries: 
+* precomputed hmmsearch results (tsvs and fastas) of the UHGG database
+* fingerprints and pairwise tanimoto similarity matrix for all MetaCyc fingerprints
+* dictionaries needed to link chemical and protein data
+
 ## Conda environment
 To run command-line SIMMER, the user will need the appropriate conda environment.
 
@@ -23,20 +36,7 @@ If "ResolvePackageNotFound" error is returned, you will manually create the SIMM
 If for some reason an error such as ModuleNotFoundError: No module named 'module_name' occurs when running SIMMER, please find and install the relevant package from [anaconda](https://anaconda.org/).
 
 Once ready to run SIMMER, use\
-`$ source activate SIMMER_local`
-
-## Precomputed Data (updated files on 2022_07_28 - please redownload to be up-to-date)
-This can be downloaded from https://simmer.pollard.gladstone.org//SIMMER_files.tar.gz
-
-`$ wget https://simmer.pollard.gladstone.org//SIMMER_files.tar.gz`\
-Once unzipped, the relevant files are located in <your_filepath>/usr/share/nginx/projects/simmer/SIMMER-website/SIMMER_files
-
-(This precomputed data takes up ~18G once unzipped. If space is a constraint, please use the webtool version of SIMMER available at https://simmer.pollard.gladstone.org/.
-
-These files contain all the precomputed data needed to run any SIMMER queries: 
-* precomputed hmmsearch results (tsvs and fastas) of the UHGG database
-* fingerprints and pairwise tanimoto similarity matrix for all MetaCyc fingerprints
-* dictionaries needed to link chemical and protein data
+`$ conda activate SIMMER_local`
  
  ## Input format
  If the user has more than a few queries, they will want to input their queries as a tsv file organized as follows:
