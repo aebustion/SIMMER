@@ -26,10 +26,8 @@ To run command-line SIMMER, the user will need the appropriate conda environment
 `$ conda env create --file SIMMER_local.yml`\
 `$ source activate SIMMER_local`
 
-If "ResolvePackageNotFound" error is returned, you will manually create the SIMMER env and install the following packages:
+If "ResolvePackageNotFound" error is returned, you can manually create the SIMMER env and install the following packages:
 
-`$ conda create --name SIMMER_local python=3`\
-`$ source activate SIMMER_local`\
 `$ conda install -c conda-forge rdkit`\
 `$ conda install -c conda-forge scipy`
 
@@ -37,6 +35,8 @@ If for some reason an error such as ModuleNotFoundError: No module named 'module
 
 Once ready to run SIMMER, use\
 `$ conda activate SIMMER_local`
+`$ python3 SIMMER.py -h`\
+example commands are at the end of this README.
  
  ## Input format
  If the user has more than a few queries, they will want to input their queries as a tsv file organized as follows:
