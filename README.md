@@ -66,7 +66,7 @@ To see all argument options:\
 `$ python3 SIMMER.py -h`
 
 to run for a single query at a time (follow command line prompts to input the query):\
-`$ python3 SIMMER.py -i /pollard/data/projects/drug_metabolism/SIMMER_files -o ./`
+`$ python3 SIMMER.py -i <path_to_precomputed_data> -o ./`
 
 or to run with multiple queries in tsv format:\
 `$ python3 SIMMER.py -i <path_to_precomputed_data> -o <path_to_output_director> -q <path_to_query_df>`
