@@ -34,7 +34,7 @@ If "ResolvePackageNotFound" error is returned, you can manually create the SIMME
 If for some reason an error such as ModuleNotFoundError: No module named 'module_name' occurs when running SIMMER, please find and install the relevant package from [anaconda](https://anaconda.org/).
 
 Once ready to run SIMMER, use\
-`$ conda activate SIMMER_local`
+`$ conda activate SIMMER_local`\
 `$ python3 SIMMER.py -h`\
 example commands are at the end of this README.
  
