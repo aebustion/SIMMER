@@ -1,5 +1,6 @@
 # SIMMER
-Use chemical and protein Similarity to Identify MicrobioMe Enzymatic Reactions.\
+Use chemical and protein Similarity to Identify MicrobioMe Enzymatic Reactions.
+
 Bustion AE, Nayak RR, Agrawal A, Turnbaugh PJ, Pollard KS. 2023. SIMMER employs similarity algorithms to accurately identify human gut microbiome species and enzymes capable of known chemical transformations. Elife 12. doi:10.7554/eLife.82401
 
 This tool can be used directly on the web at https://simmer.pollard.gladstone.org/. To query more than ten input reactions at a time, or to consider more than one closest MetaCyc reaction, please read on for use of the command-line tool.
